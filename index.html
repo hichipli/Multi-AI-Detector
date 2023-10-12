@@ -47,14 +47,24 @@
             <p>Select which detectors to display on the main screen:</p>
             <!-- Similar checkbox group as in select-detectors section for display settings -->
             <p>Enter API keys for detectors:</p>
+            <label><input type="checkbox" id="showDetector1" checked> Show AI Detector v1</label>
+            <label><input type="checkbox" id="showDetector2" checked> Show AI Detector v2</label>
+            <label><input type="checkbox" id="showWinston" checked> Show Winston</label>
             <label for="winstonKey">Winston API Key:</label>
             <input type="text" id="winstonKey" placeholder="Enter API Key">
+            <button onclick="clearApiKey('winstonKey')">Clear</button>
             <label for="winstonToken">Winston Bearer Token:</label>
             <input type="text" id="winstonToken" placeholder="Enter Bearer Token">
+            <button onclick="clearApiKey('winstonToken')">Clear</button>
+            <label><input type="checkbox" id="showOriginality" checked> Show Originality</label>
             <label for="originalityKey">Originality API Key:</label>
             <input type="text" id="originalityKey" placeholder="Enter API Key">
+            <button onclick="clearApiKey('originalityKey')">Clear</button>
+            <label><input type="checkbox" id="showGPTZero" checked> Show GPTZero</label>
             <label for="gptzeroKey">GPTZero API Key:</label>
             <input type="text" id="gptzeroKey" placeholder="Enter API Key">
+            <button onclick="clearApiKey('gptzeroKey')">Clear</button>
+            <br><br>
             <button onclick="saveSettings()">Save</button>
         </div>
     </div>

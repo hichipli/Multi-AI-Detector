@@ -1,7 +1,20 @@
+document.addEventListener("DOMContentLoaded", function() {
+    loadSettings();
+    updateDetectorsVisibility();
+});
+
 document.getElementById('inputText').addEventListener('input', function(e) {
     const wordCount = e.target.value.split(/\s+/).filter(function(word) { return word.length > 0 }).length;
     document.getElementById('wordCount').textContent = wordCount + ' words';
 });
+
+function updateDetectorsVisibility() {
+    document.getElementById('detector1').parentElement.style.display = localStorage.getItem('showDetector1') === "true" ? "" : "none";
+    document.getElementById('detector2').parentElement.style.display = localStorage.getItem('showDetector2') === "true" ? "" : "none";
+    document.getElementById('winston').parentElement.style.display = localStorage.getItem('showWinston') === "true" ? "" : "none";
+    document.getElementById('originality').parentElement.style.display = localStorage.getItem('showOriginality') === "true" ? "" : "none";
+    document.getElementById('gptzero').parentElement.style.display = localStorage.getItem('showGPTZero') === "true" ? "" : "none";
+}
 
 function toggleSettings() {
     const settingsModal = document.getElementById('settings-modal');
@@ -15,6 +28,12 @@ function saveSettings() {
     const originalityKey = document.getElementById('originalityKey').value;
     const gptzeroKey = document.getElementById('gptzeroKey').value;
 
+    localStorage.setItem('showDetector1', document.getElementById('showDetector1').checked);
+    localStorage.setItem('showDetector2', document.getElementById('showDetector2').checked);
+    localStorage.setItem('showWinston', document.getElementById('showWinston').checked);
+    localStorage.setItem('showOriginality', document.getElementById('showOriginality').checked);
+    localStorage.setItem('showGPTZero', document.getElementById('showGPTZero').checked);
+
     // Save to localStorage
     localStorage.setItem('winstonKey', winstonKey);
     localStorage.setItem('winstonToken', winstonToken);
@@ -22,9 +41,22 @@ function saveSettings() {
     localStorage.setItem('gptzeroKey', gptzeroKey);
 
     alert("Settings saved!");
+    updateDetectorsVisibility();
 }
 
 function loadSettings() {
+    if (localStorage.getItem('showDetector1') === null) localStorage.setItem('showDetector1', 'true');
+    if (localStorage.getItem('showDetector2') === null) localStorage.setItem('showDetector2', 'true');
+    if (localStorage.getItem('showWinston') === null) localStorage.setItem('showWinston', 'true');
+    if (localStorage.getItem('showOriginality') === null) localStorage.setItem('showOriginality', 'true');
+    if (localStorage.getItem('showGPTZero') === null) localStorage.setItem('showGPTZero', 'true');
+
+    document.getElementById('showDetector1').checked = localStorage.getItem('showDetector1') === "true";
+    document.getElementById('showDetector2').checked = localStorage.getItem('showDetector2') === "true";
+    document.getElementById('showWinston').checked = localStorage.getItem('showWinston') === "true";
+    document.getElementById('showOriginality').checked = localStorage.getItem('showOriginality') === "true";
+    document.getElementById('showGPTZero').checked = localStorage.getItem('showGPTZero') === "true";
+
     // Load from localStorage and set the input fields
     document.getElementById('winstonKey').value = localStorage.getItem('winstonKey') || '';
     document.getElementById('winstonToken').value = localStorage.getItem('winstonToken') || '';
@@ -37,6 +69,11 @@ function detect() {
     const inputText = document.getElementById('inputText').value;
     const wordsCount = inputText.split(/\s+/).filter(function(word) { return word.length > 0 }).length;
     const resultText = document.getElementById('resultText');
+
+    if(wordsCount === 0) {
+        alert("Please enter some text before detecting.");
+        return;
+    }
 
     const detectors = [
         'detector1',
@@ -113,7 +150,6 @@ function detect() {
             const API_URL = "https://api.gptzero.me/v2/predict/text";
             const API_KEY = localStorage.getItem('gptzeroKey');  // Load API key from localStorage
             const headers = {
-                "x-api-key": API_KEY,
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             };
@@ -149,13 +185,17 @@ function detect() {
 
         // Call API for OriginalityAI
         if (detectorId === 'originality') {
+            const API_KEY = localStorage.getItem('originalityKey');
             const listItem = document.createElement('li');
-            if(wordsCount < 50) {
+
+            if (!API_KEY) {
+                listItem.textContent = "Originality.AI Result: API key is missing, please add it in the settings.";
+                resultList.appendChild(listItem);
+            } else if(wordsCount < 50) {
                 listItem.textContent = `Originality.AI Result: Text must be longer than 50 words.`;
                 resultList.appendChild(listItem); 
             } else {
                 const BASE_URL = "https://api.originality.ai/api/v1/scan/ai";
-                const API_KEY = localStorage.getItem('originalityKey');
                 const headers = {
                     "Accept": "application/json",
                     "X-OAI-API-KEY": API_KEY,
@@ -185,6 +225,7 @@ function detect() {
             }
         }
 
+
         // ... Add other detectors' logic as needed
     });
 }
@@ -195,4 +236,9 @@ window.onclick = function(event) {
     if (event.target === settingsModal) {
         settingsModal.style.display = "none";
     }
+}
+
+function clearApiKey(keyId) {
+    localStorage.removeItem(keyId);
+    document.getElementById(keyId).value = "";
 }
