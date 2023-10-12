@@ -4,7 +4,7 @@
 
 Multi AI Detector is a web application that allows users to analyze text using multiple AI detectors. It provides an interface to input text and select from various AI detectors to evaluate the entered text. The results from the selected detectors are then displayed, offering a comprehensive analysis of the text.
 
-![Demo Image](./path-to-your-demo-image.png) 
+![Demo Image](./Media/MAD_demo_image.png) 
 
 ## Features
 
