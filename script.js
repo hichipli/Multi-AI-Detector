@@ -23,7 +23,9 @@ function toggleSettings() {
 }
 
 function saveSettings() {
+    console.log("saveSettings called");
     const winstonKey = document.getElementById('winstonKey').value;
+    console.log("winstonKey:", winstonKey);
     const winstonToken = document.getElementById('winstonToken').value;
     const originalityKey = document.getElementById('originalityKey').value;
     const gptzeroKey = document.getElementById('gptzeroKey').value;
@@ -211,10 +213,42 @@ function detect() {
 
         // Call API for Winston
         if (detectorId === 'winston') {
-            const listItem = document.createElement('li');
-            listItem.textContent = `Winston.AI Result: Temporarily not supported.`;
-            resultList.appendChild(listItem);
-            checkAllCallsCompleted();
+            const API_URL = "https://api.gowinston.ai/functions/v1/predict";
+            const API_KEY = document.getElementById('winstonKey').value;  // Load API key from input
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkZ3NzdXRyaHpya2xsc3RnbGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY2ODc5MjMsImV4cCI6MjAwMjI2MzkyM30.bwSe1TrFMhcosgqFSlGIhMIv9fxohzLG0eyBEs7wUo8"
+            };
+            const data = {
+                "api_key": API_KEY,
+                "text": inputText,
+                "sentences": true,
+                "language": "en"
+            };
+
+            fetch(API_URL, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const listItem = document.createElement('li');
+                if (data && data.score) {
+                    const processedScore = 1 - (data.score / 100);
+                    listItem.textContent = `Winston.AI Result: ${processedScore}`;
+                } else {
+                    listItem.textContent = `Winston.AI Result: Unexpected response format`;
+                }
+                resultList.appendChild(listItem);
+                checkAllCallsCompleted();
+            })
+            .catch(error => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Error calling Winston.AI: ${error.message}`;
+                resultList.appendChild(listItem);
+                checkAllCallsCompleted();
+            });
         }
 
         // Call API for OriginalityAI
