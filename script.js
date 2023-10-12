@@ -70,11 +70,6 @@ function detect() {
     const wordsCount = inputText.split(/\s+/).filter(function(word) { return word.length > 0 }).length;
     const resultText = document.getElementById('resultText');
 
-    if(wordsCount === 0) {
-        alert("Please enter some text before detecting.");
-        return;
-    }
-
     const detectors = [
         'detector1',
         'detector2',
@@ -83,6 +78,28 @@ function detect() {
         'gptzero'
     ];
     const selectedDetectors = detectors.filter(detectorId => document.getElementById(detectorId).checked);
+    
+    let totalCalls = selectedDetectors.length; 
+    let remainingCalls = totalCalls;
+    
+    // Check if Winston is selected and adjust the counter accordingly
+    if (selectedDetectors.includes('winston')) {
+        remainingCalls--;
+    }
+
+    document.getElementById('loadingText').style.display = 'block'; // Show loading text
+
+    function checkAllCallsCompleted() {
+        remainingCalls--;
+        if (remainingCalls <= 0) {
+            document.getElementById('loadingText').style.display = 'none'; // Hide loading text
+        }
+    }
+
+    if(wordsCount === 0) {
+        alert("Please enter some text before detecting.");
+        return;
+    }
 
     // Clear previous results
     resultText.innerHTML = "Sending the text to various APIs for analysis...";
@@ -110,11 +127,13 @@ function detect() {
                 const listItem = document.createElement('li');
                 listItem.textContent = `AI Content Detector v1 Result: ${data.fake_probability}`;
                 resultList.appendChild(listItem);
+                checkAllCallsCompleted();
             })
             .catch(error => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `Error calling AI Content Detector v1: ${error.message}`;
                 resultList.appendChild(listItem);
+                checkAllCallsCompleted();
             });
         }
 
@@ -137,11 +156,14 @@ function detect() {
                 const listItem = document.createElement('li');
                 listItem.textContent = `AI Content Detector v2 Result: ${data.ai_percentage / 100}`;
                 resultList.appendChild(listItem);
+                checkAllCallsCompleted();
+                
             })
             .catch(error => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `Error calling AI Content Detector v2: ${error.message}`;
                 resultList.appendChild(listItem);
+                checkAllCallsCompleted();
             });
         }
 
@@ -166,21 +188,33 @@ function detect() {
             .then(response => response.json())
             .then(data => {
                 const listItem = document.createElement('li');
-                listItem.textContent = `GPTZero Result: ${data.documents[0].completely_generated_prob}`;
+                // Change the condition to check data.error instead of data.message
+                if (data && data.error && data.error.includes("You have exceeded your usage threshold of 7 requests per hour")) {
+                    listItem.textContent = "GPTZero Result: Free quota exhausted, please enter an API key in the settings.";
+                    alert("GPTZero: Your free quota is exhausted, please enter an API key in the settings.");
+                } else if (data && data.documents && data.documents.length > 0) {
+                    listItem.textContent = `GPTZero Result: ${data.documents[0].completely_generated_prob}`;
+                } else {
+                    listItem.textContent = `GPTZero Result: Unexpected response format`;
+                }
                 resultList.appendChild(listItem);
+                checkAllCallsCompleted();
             })
             .catch(error => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `Error calling GPTZero: ${error.message}`;
                 resultList.appendChild(listItem);
+                checkAllCallsCompleted();
             });
         }
+
 
         // Call API for Winston
         if (detectorId === 'winston') {
             const listItem = document.createElement('li');
             listItem.textContent = `Winston.AI Result: Temporarily not supported.`;
             resultList.appendChild(listItem);
+            checkAllCallsCompleted();
         }
 
         // Call API for OriginalityAI
@@ -191,9 +225,11 @@ function detect() {
             if (!API_KEY) {
                 listItem.textContent = "Originality.AI Result: API key is missing, please add it in the settings.";
                 resultList.appendChild(listItem);
+                checkAllCallsCompleted();
             } else if(wordsCount < 50) {
                 listItem.textContent = `Originality.AI Result: Text must be longer than 50 words.`;
                 resultList.appendChild(listItem); 
+                checkAllCallsCompleted();
             } else {
                 const BASE_URL = "https://api.originality.ai/api/v1/scan/ai";
                 const headers = {
@@ -217,10 +253,12 @@ function detect() {
                 .then(data => {
                     listItem.textContent = `Originality.AI Result: ${data.score.ai}`;
                     resultList.appendChild(listItem);
+                    checkAllCallsCompleted();
                 })
                 .catch(error => {
                     listItem.textContent = `Error calling Originality.AI: ${error.message}`;
                     resultList.appendChild(listItem);
+                    checkAllCallsCompleted();
                 });
             }
         }
