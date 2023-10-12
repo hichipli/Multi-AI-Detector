@@ -40,7 +40,7 @@ Visit [Multi AI Detector](https://hichipli.github.io/Multi-AI-Detector/) to try 
 
 ## Contribute
 
-Feel free to contribute to this project! Fork the repository, make your changes, and submit a pull request.
+Feel free to contribute to this project! Fork the repository, make your changes, and submit a pull request!
 
 ## License
 
