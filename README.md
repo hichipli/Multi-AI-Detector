@@ -22,7 +22,7 @@ Multi AI Detector is a web application that allows users to analyze text using m
 
 ## Live Demo
 
-Visit [Multi AI Detector](https://hichipli.github.io/Multi-AI-Detector/) to try the application live.
+Visit [Multi AI Detector](https://www.chatcatgpt.org/multi-ai-detector) to try the application live.
 
 ## Technology Stack
 
@@ -32,7 +32,7 @@ Visit [Multi AI Detector](https://hichipli.github.io/Multi-AI-Detector/) to try 
 
 ## Setup and Installation
 
-1. Visit the [website](https://hichipli.github.io/Multi-AI-Detector/) directly.
+1. Visit the [website](https://www.chatcatgpt.org/multi-ai-detector) and click "Try it NOW".
    
    -or-
    
