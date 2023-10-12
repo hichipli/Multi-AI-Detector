@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Multi AI Detector</title>
+</head>
+
+<body>
+    <header>
+        <h1>Multi AI Detector</h1>
+    </header>
+    <main>
+        <section id="input-section">
+            <label for="inputText">Enter the text to analyze:</label>
+            <textarea id="inputText" rows="4" cols="50"></textarea>
+            <p id="wordCount" style="text-align: right;">0 words</p>
+            <button onclick="detect()">Detect</button>
+        </section>
+        <section id="select-detectors">
+            <h2>Select AI Detectors</h2>
+            <label><input type="checkbox" id="detector1" checked> AI Detector v1</label>
+            <label><input type="checkbox" id="detector2" checked> AI Detector v2</label>
+            <label><input type="checkbox" id="winston" checked> Winston</label>
+            <label><input type="checkbox" id="originality" checked> Originality</label>
+            <label><input type="checkbox" id="gptzero" checked> GPTZero</label>
+        </section>
+        <section id="results">
+            <h2>Results</h2>
+            <p id="resultText">Results will be displayed here...</p>
+        </section>
+        <footer>
+            <p>More AI Detector support is being worked on and will be released in the future.</p>
+        </footer>
+    </main>
+    <nav>
+        <button onclick="toggleSettings()">Settings ⚙️</button>
+    </nav>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="toggleSettings()">&times;</span>
+            <h2>Settings</h2>
+            <p>Select which detectors to display on the main screen:</p>
+            <!-- Similar checkbox group as in select-detectors section for display settings -->
+            <p>Enter API keys for detectors:</p>
+            <label for="winstonKey">Winston API Key:</label>
+            <input type="text" id="winstonKey" placeholder="Enter API Key">
+            <label for="winstonToken">Winston Bearer Token:</label>
+            <input type="text" id="winstonToken" placeholder="Enter Bearer Token">
+            <label for="originalityKey">Originality API Key:</label>
+            <input type="text" id="originalityKey" placeholder="Enter API Key">
+            <label for="gptzeroKey">GPTZero API Key:</label>
+            <input type="text" id="gptzeroKey" placeholder="Enter API Key">
+            <button onclick="saveSettings()">Save</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
