@@ -26,7 +26,6 @@ function saveSettings() {
     console.log("saveSettings called");
     const winstonKey = document.getElementById('winstonKey').value;
     console.log("winstonKey:", winstonKey);
-    const winstonToken = document.getElementById('winstonToken').value;
     const originalityKey = document.getElementById('originalityKey').value;
     const gptzeroKey = document.getElementById('gptzeroKey').value;
 
@@ -38,7 +37,6 @@ function saveSettings() {
 
     // Save to localStorage
     localStorage.setItem('winstonKey', winstonKey);
-    localStorage.setItem('winstonToken', winstonToken);
     localStorage.setItem('originalityKey', originalityKey);
     localStorage.setItem('gptzeroKey', gptzeroKey);
 
@@ -61,7 +59,6 @@ function loadSettings() {
 
     // Load from localStorage and set the input fields
     document.getElementById('winstonKey').value = localStorage.getItem('winstonKey') || '';
-    document.getElementById('winstonToken').value = localStorage.getItem('winstonToken') || '';
     document.getElementById('originalityKey').value = localStorage.getItem('originalityKey') || '';
     document.getElementById('gptzeroKey').value = localStorage.getItem('gptzeroKey') || '';
 }
