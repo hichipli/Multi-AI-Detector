@@ -13,7 +13,7 @@ Multi AI Detector is a web application that allows users to analyze text using m
 - **Responsive Design**: The application is designed to be used on devices of all sizes.
 - **Settings Customization**: Customize settings to show/hide detectors and manage API keys.
 
-## Included Detectors
+## Included AI Detectors
 - AI Detector v1
 - AI Detector v2
 - Winston.ai
