@@ -1,9 +1,22 @@
+/* Define CSS variables for easy theme management */
+:root {
+    --primary-bg-color: #4CAF50;
+    --primary-text-color: white;
+    --secondary-bg-color: #f8f8f8;
+    --secondary-text-color: #333;
+    --text-input-border: #ddd;
+    --modal-bg-color: rgba(0,0,0,0.4);
+    --shadow-color: rgba(0,0,0,0.1);
+    --font-family: 'Roboto', sans-serif;
+    --hover-bg-color: #45a049;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f8f8f8;
-    color: #333;
+    font-family: var(--font-family);
+    background-color: var(--secondary-bg-color);
+    color: var(--secondary-text-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11,28 +24,34 @@ body {
     padding: 0;
 }
 
+/* Header and navigation styles */
 header, nav {
     width: 100%;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
     text-align: center;
     padding: 10px;
 }
 
+/* Main content styling */
 main {
     max-width: 800px;
     width: 100%;
     padding: 20px;
-    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
-    background-color: white;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    background-color: var(--primary-text-color);
     margin: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-section {
+/* Section and textarea share common properties */
+section, textarea {
     width: 100%;
+}
+
+section {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -40,25 +59,27 @@ section {
 }
 
 textarea {
-    width: 100%;
     margin-bottom: 10px;
 }
 
+/* Button styling */
 button {
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
     border: none;
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 5px;
     font-size: 16px;
     margin-top: 10px;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: var(--hover-bg-color);
 }
 
+/* Form input styling */
 label {
     display: block;
     margin-bottom: 5px;
@@ -69,7 +90,7 @@ input[type=text] {
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--text-input-border);
 }
 
 input[type=checkbox] {
@@ -80,19 +101,16 @@ input[type=checkbox] {
     display: none;
 }
 
+/* Footer styling */
 footer {
     margin-top: 20px;
     font-size: 14px;
 }
 
+/* Fixed navigation styling */
 nav {
     position: fixed;
     bottom: 0;
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
-    padding: 10px;
 }
 
 nav button {
@@ -100,6 +118,7 @@ nav button {
     font-size: 18px;
 }
 
+/* Modal styling */
 .modal {
     display: none;
     position: fixed;
@@ -109,19 +128,19 @@ nav button {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
+    background-color: var(--modal-bg-color);
     padding-top: 60px;
 }
 
 .modal-content {
-    background-color: #fefefe;
+    background-color: var(--primary-text-color);
     margin: 5% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
 }
 
+/* Close button styling for modal */
 .close {
     color: #aaaaaa;
     float: right;
@@ -131,35 +150,22 @@ nav button {
 
 .close:hover,
 .close:focus {
-    color: #000;
+    color: var(--secondary-text-color);
     text-decoration: none;
     cursor: pointer;
 }
 
+/* Responsive design adjustments */
 @media only screen and (max-width: 600px) {
-    main {
+    main, nav button {
         padding: 10px;
-        margin: 10px;
+    }
+
+    button, h1, h2, input[type=text], textarea, nav button {
+        font-size: 14px;
     }
 
     button {
         padding: 8px 16px;
-        font-size: 14px;
-    }
-
-    h1, h2 {
-        font-size: 18px;
-    }
-
-    input[type=text], textarea {
-        font-size: 14px;
-    }
-
-    nav button {
-        font-size: 16px;
-    }
-
-    textarea {
-        width: 100%;
     }
 }
