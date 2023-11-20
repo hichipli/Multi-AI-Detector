@@ -4,7 +4,6 @@ from urllib.parse import quote
 
 # User-defined API keys and tokens
 WINSTON_API_KEY = "Your API Key here"
-WINSTON_BEARER_TOKEN = "Your Token here"
 ORIGINALITY_API_KEY = "Your API Key here"
 GPTZERO_API_KEY = "Your API Key here"
 
