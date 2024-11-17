@@ -9,7 +9,7 @@ This project is part of the research presented in the paper:
 
 The study investigates the performance and implications of AI detectors in academic writing, highlighting the evolving role of generative models like ChatGPT in scholarly communication.
 
-![Demo Image](./Media/MAD_demo_image.png)
+![Demo Image](./Media/MAD_demo_image_11/17/24.png)
 
 ## Features
 
