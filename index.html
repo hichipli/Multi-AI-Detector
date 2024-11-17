@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <title>Multi AI Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -30,41 +33,84 @@
         </section>
         <section id="results">
             <h2>Results</h2>
-            <p id="loadingText" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Loading...</p> 
-            <p id="resultText">Results will be displayed here...</p>
+            <div id="loadingText" style="display:none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Analyzing text with AI detectors...</span>
+            </div>
+            <div id="resultText">Results will be displayed here...</div>
         </section>        
         <footer>
-            <p>More AI Detector support is being worked on and will be released in the future.</p>
+            <div class="footer-content">
+                <a href="https://viablelab.org" target="_blank" rel="noopener noreferrer" class="footer-logo">
+                    <span>VIABLE Lab</span>
+                </a>
+                <p class="footer-text">
+                    This tool is developed by the <a href="https://viablelab.org" target="_blank" rel="noopener noreferrer" class="footer-link">VIABLE Lab</a> at the University of Florida.
+                </p>
+            </div>
         </footer>
     </main>
     <nav>
-        <button onclick="toggleSettings()">Settings ⚙️</button>
+        <button onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
     </nav>
 
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="toggleSettings()">&times;</span>
-            <h2>Settings</h2>
-            <p>Select which detectors to display on the main screen:</p>
-            <!-- Similar checkbox group as in select-detectors section for display settings -->
-            <p>Enter API keys for detectors:</p>
-            <label><input type="checkbox" id="showDetector1" checked> Show AI Detector v1</label>
-            <label><input type="checkbox" id="showDetector2" checked> Show AI Detector v2</label>
-            <label><input type="checkbox" id="showWinston" checked> Show Winston</label>
-            <label for="winstonKey">Winston API Key:</label>
-            <input type="text" id="winstonKey" placeholder="Enter API Key">
-            <button onclick="clearApiKey('winstonKey')">Clear</button>
-            <label><input type="checkbox" id="showOriginality" checked> Show Originality</label>
-            <label for="originalityKey">Originality API Key:</label>
-            <input type="text" id="originalityKey" placeholder="Enter API Key">
-            <button onclick="clearApiKey('originalityKey')">Clear</button>
-            <label><input type="checkbox" id="showGPTZero" checked> Show GPTZero</label>
-            <label for="gptzeroKey">GPTZero API Key:</label>
-            <input type="text" id="gptzeroKey" placeholder="Enter API Key">
-            <button onclick="clearApiKey('gptzeroKey')">Clear</button>
-            <br><br>
-            <button onclick="saveSettings()">Save</button>
+            <div class="settings-header">
+                <h2>Settings</h2>
+                <span class="close" onclick="toggleSettings()">
+                    <i class="fas fa-times"></i>
+                </span>
+            </div>
+            
+            <div class="settings-section">
+                <h3>Visible Detectors</h3>
+                <label><input type="checkbox" id="showDetector1" checked> AI Detector v1</label>
+                <label><input type="checkbox" id="showDetector2" checked> AI Detector v2</label>
+                <label><input type="checkbox" id="showWinston" checked> Winston AI</label>
+                <label><input type="checkbox" id="showOriginality" checked> Originality AI</label>
+                <label><input type="checkbox" id="showGPTZero" checked> GPTZero</label>
+            </div>
+
+            <div class="settings-section">
+                <h3>API Keys</h3>
+                <div class="api-key-input-group">
+                    <label for="winstonKey">Winston AI API Key</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="winstonKey" placeholder="Enter your Winston AI API key">
+                        <button onclick="clearApiKey('winstonKey')" title="Clear API Key">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="api-key-input-group">
+                    <label for="originalityKey">Originality AI API Key</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="originalityKey" placeholder="Enter your Originality AI API key">
+                        <button onclick="clearApiKey('originalityKey')" title="Clear API Key">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="api-key-input-group">
+                    <label for="gptzeroKey">GPTZero API Key</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="gptzeroKey" placeholder="Enter your GPTZero API key">
+                        <button onclick="clearApiKey('gptzeroKey')" title="Clear API Key">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="save-button" onclick="saveSettings()">
+                Save Changes
+            </button>
         </div>
     </div>
 

@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     loadSettings();
     updateDetectorsVisibility();
+    document.getElementById('settings-modal').style.display = 'none';
 });
 
 document.getElementById('inputText').addEventListener('input', function(e) {
@@ -9,17 +10,34 @@ document.getElementById('inputText').addEventListener('input', function(e) {
 });
 
 function updateDetectorsVisibility() {
-    document.getElementById('detector1').parentElement.style.display = localStorage.getItem('showDetector1') === "true" ? "" : "none";
-    document.getElementById('detector2').parentElement.style.display = localStorage.getItem('showDetector2') === "true" ? "" : "none";
-    document.getElementById('winston').parentElement.style.display = localStorage.getItem('showWinston') === "true" ? "" : "none";
-    document.getElementById('originality').parentElement.style.display = localStorage.getItem('showOriginality') === "true" ? "" : "none";
-    document.getElementById('gptzero').parentElement.style.display = localStorage.getItem('showGPTZero') === "true" ? "" : "none";
+    const detectors = [
+        { id: 'detector1', storageKey: 'showDetector1' },
+        { id: 'detector2', storageKey: 'showDetector2' },
+        { id: 'winston', storageKey: 'showWinston' },
+        { id: 'originality', storageKey: 'showOriginality' },
+        { id: 'gptzero', storageKey: 'showGPTZero' }
+    ];
+
+    detectors.forEach(detector => {
+        const element = document.getElementById(detector.id);
+        if (element && element.parentElement) {
+            const isVisible = localStorage.getItem(detector.storageKey) === "true";
+            element.parentElement.style.display = isVisible ? "" : "none";
+            if (!isVisible) {
+                element.checked = false;
+            }
+        }
+    });
 }
 
 function toggleSettings() {
     const settingsModal = document.getElementById('settings-modal');
-    settingsModal.style.display = settingsModal.style.display === 'block' ? 'none' : 'block';
-    loadSettings();  // Load settings from localStorage when settings panel is opened
+    if (settingsModal.style.display === 'flex') {
+        settingsModal.style.display = 'none';
+    } else {
+        settingsModal.style.display = 'flex';
+        loadSettings();
+    }
 }
 
 function saveSettings() {
@@ -63,21 +81,70 @@ function loadSettings() {
     document.getElementById('gptzeroKey').value = localStorage.getItem('gptzeroKey') || '';
 }
 
+function updateResultItem(text, type = 'success', value = null) {
+    const li = document.createElement('li');
+    li.className = `result-card result-${type}`;
+    
+    if (type === 'error' || type === 'warning') {
+        li.innerHTML = `
+            <div class="message-box ${type}-message">
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
+                <span>${text}</span>
+            </div>
+        `;
+    } else if (type === 'success' && value !== null) {
+        const percentage = parseFloat(value) * 100;
+        
+        li.innerHTML = `
+            <div class="result-main">
+                <h3 class="result-title">${text}</h3>
+                <div class="result-score">
+                    <span class="result-value">${percentage.toFixed(1)}%</span>
+                    <span class="result-label">AI Probability</span>
+                </div>
+            </div>
+            <div class="result-explanation">
+                ${getSimpleExplanation(percentage)}
+            </div>
+        `;
+    }
+    
+    return li;
+}
+
+function getSimpleExplanation(percentage) {
+    if (percentage < 30) {
+        return "Shows strong characteristics of human writing with natural language patterns and variations.";
+    } else if (percentage < 70) {
+        return "Contains mixed characteristics that could indicate either human editing of AI text or AI enhancement of human writing.";
+    } else {
+        return "Displays strong AI-generated patterns with consistent formatting and structure.";
+    }
+}
 
 function detect() {
     const inputText = document.getElementById('inputText').value;
     const wordsCount = inputText.split(/\s+/).filter(function(word) { return word.length > 0 }).length;
-    const resultText = document.getElementById('resultText');
-
-    const detectors = [
-        'detector1',
-        'detector2',
-        'winston',
-        'originality',
-        'gptzero'
-    ];
-    const selectedDetectors = detectors.filter(detectorId => document.getElementById(detectorId).checked);
     
+    if(wordsCount === 0) {
+        alert("Please enter some text before detecting.");
+        return;
+    }
+
+    const resultText = document.getElementById('resultText');
+    const detectors = [
+        { id: 'detector1', storageKey: 'showDetector1' },
+        { id: 'detector2', storageKey: 'showDetector2' },
+        { id: 'winston', storageKey: 'showWinston' },
+        { id: 'originality', storageKey: 'showOriginality' },
+        { id: 'gptzero', storageKey: 'showGPTZero' }
+    ];
+    
+    const selectedDetectors = detectors
+        .filter(detector => localStorage.getItem(detector.storageKey) === "true")
+        .filter(detector => document.getElementById(detector.id).checked)
+        .map(detector => detector.id);
+
     let totalCalls = selectedDetectors.length; 
     let remainingCalls = totalCalls;
     
@@ -95,14 +162,8 @@ function detect() {
         }
     }
 
-    if(wordsCount === 0) {
-        alert("Please enter some text before detecting.");
-        return;
-    }
-
     // Clear previous results
-    resultText.innerHTML = "Sending the text to various APIs for analysis...";
-
+    resultText.innerHTML = '';
     const resultList = document.createElement('ul');
     resultText.appendChild(resultList);
 
@@ -123,15 +184,18 @@ function detect() {
             })
             .then(response => response.json())
             .then(data => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `AI Content Detector v1 Result: ${data.fake_probability}`;
-                resultList.appendChild(listItem);
+                resultList.appendChild(updateResultItem(
+                    'AI Content Detector v1', 
+                    'success', 
+                    data.fake_probability
+                ));
                 checkAllCallsCompleted();
             })
             .catch(error => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `Error calling AI Content Detector v1: ${error.message}`;
-                resultList.appendChild(listItem);
+                resultList.appendChild(updateResultItem(
+                    "Unable to connect to AI Content Detector v1. Please try again later.", 
+                    'error'
+                ));
                 checkAllCallsCompleted();
             });
         }
@@ -152,16 +216,18 @@ function detect() {
             })
             .then(response => response.json())
             .then(data => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `AI Content Detector v2 Result: ${data.ai_percentage / 100}`;
-                resultList.appendChild(listItem);
+                resultList.appendChild(updateResultItem(
+                    'AI Content Detector v2', 
+                    'success', 
+                    data.ai_percentage / 100
+                ));
                 checkAllCallsCompleted();
-                
             })
             .catch(error => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `Error calling AI Content Detector v2: ${error.message}`;
-                resultList.appendChild(listItem);
+                resultList.appendChild(updateResultItem(
+                    "Unable to connect to AI Content Detector v2. Please try again later.", 
+                    'error'
+                ));
                 checkAllCallsCompleted();
             });
         }
@@ -176,7 +242,7 @@ function detect() {
             };
             const payload = {
                 "document": inputText,
-                "version": "2023-09-14"  // Update to your desired version
+                "version": "2024-11-11-base"  // Update to your desired version
             };
 
             fetch(API_URL, {
@@ -186,17 +252,24 @@ function detect() {
             })
             .then(response => response.json())
             .then(data => {
-                const listItem = document.createElement('li');
-                // Change the condition to check data.error instead of data.message
-                if (data && data.error && data.error.includes("You have exceeded your usage threshold of 7 requests per hour")) {
-                    listItem.textContent = "GPTZero Result: Free quota exhausted, please enter an API key in the settings.";
-                    alert("GPTZero: Your free quota is exhausted, please enter an API key in the settings.");
-                } else if (data && data.documents && data.documents.length > 0) {
-                    listItem.textContent = `GPTZero Result: ${data.documents[0].completely_generated_prob}`;
+                if (data && data.documents && data.documents.length > 0) {
+                    const score = data.documents[0].completely_generated_prob;
+                    resultList.appendChild(updateResultItem(
+                        'GPTZero Analysis', 
+                        'success', 
+                        score
+                    ));
+                } else if (data && data.error) {
+                    resultList.appendChild(updateResultItem(
+                        "GPTZero Result: Free quota exhausted, please enter an API key in the settings.", 
+                        'warning'
+                    ));
                 } else {
-                    listItem.textContent = `GPTZero Result: Unexpected response format`;
+                    resultList.appendChild(updateResultItem(
+                        "GPTZero Result: Unexpected response format", 
+                        'error'
+                    ));
                 }
-                resultList.appendChild(listItem);
                 checkAllCallsCompleted();
             })
             .catch(error => {
@@ -230,20 +303,26 @@ function detect() {
             })
             .then(response => response.json())
             .then(data => {
-                const listItem = document.createElement('li');
                 if (data && data.score) {
                     const processedScore = 1 - (data.score / 100);
-                    listItem.textContent = `Winston.AI Result: ${processedScore}`;
+                    resultList.appendChild(updateResultItem(
+                        'Winston.AI Analysis', 
+                        'success', 
+                        processedScore
+                    ));
                 } else {
-                    listItem.textContent = `Winston.AI Result: Unexpected response format`;
+                    resultList.appendChild(updateResultItem(
+                        "Unexpected response from Winston.AI. Please try again.", 
+                        'error'
+                    ));
                 }
-                resultList.appendChild(listItem);
                 checkAllCallsCompleted();
             })
             .catch(error => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `Error calling Winston.AI: ${error.message}`;
-                resultList.appendChild(listItem);
+                resultList.appendChild(updateResultItem(
+                    "Unable to connect to Winston.AI. Please check your API key and try again.", 
+                    'error'
+                ));
                 checkAllCallsCompleted();
             });
         }
@@ -254,12 +333,16 @@ function detect() {
             const listItem = document.createElement('li');
 
             if (!API_KEY) {
-                listItem.textContent = "Originality.AI Result: API key is missing, please add it in the settings.";
-                resultList.appendChild(listItem);
+                resultList.appendChild(updateResultItem(
+                    "Please add your Originality.AI API key in the settings to use this detector.", 
+                    'warning'
+                ));
                 checkAllCallsCompleted();
             } else if(wordsCount < 50) {
-                listItem.textContent = `Originality.AI Result: Text must be longer than 50 words.`;
-                resultList.appendChild(listItem); 
+                resultList.appendChild(updateResultItem(
+                    "Originality.AI requires text to be at least 50 words long.", 
+                    'warning'
+                ));
                 checkAllCallsCompleted();
             } else {
                 const BASE_URL = "https://api.originality.ai/api/v1/scan/ai";
@@ -282,13 +365,18 @@ function detect() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    listItem.textContent = `Originality.AI Result: ${data.score.ai}`;
-                    resultList.appendChild(listItem);
+                    resultList.appendChild(updateResultItem(
+                        'Originality.AI Analysis', 
+                        'success', 
+                        data.score.ai
+                    ));
                     checkAllCallsCompleted();
                 })
                 .catch(error => {
-                    listItem.textContent = `Error calling Originality.AI: ${error.message}`;
-                    resultList.appendChild(listItem);
+                    resultList.appendChild(updateResultItem(
+                        "Unable to connect to Originality.AI. Please check your API key and try again.", 
+                        'error'
+                    ));
                     checkAllCallsCompleted();
                 });
             }
